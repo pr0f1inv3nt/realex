@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@profinvent.com</authorEmail>
 	<authorUrl>http://www.joomla.profinvent.com</authorUrl>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>Realex payment plugin for Course Manager</description>
   <scriptfile>script.php</scriptfile>
         <install> <!-- Runs on install -->

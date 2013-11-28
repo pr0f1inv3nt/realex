@@ -75,7 +75,7 @@ class plgCoursemanPaymentRealex extends JPlugin {
         $result .= '<div class="span7" style="text-align:right;"><img class="realex_payment_logo" src="plugins/courseman/paymentrealex/assets/realex_payment_logo.png"></div>';
         $result .= '</div>';
         
-        
+        return $result;
     }
 
     public function onCoursemanRealexPaymentCompleted() {
@@ -140,8 +140,10 @@ class plgCoursemanPaymentRealex extends JPlugin {
      */
     private function _createSha1Hash($timestamp, $merchantId, $orderId, $amount, $currency, $secretHash) 
     {
-        $pieces = array($timestamp, $merchantId, $orderId, $amount, $currency);
-        $secretHashData = strtolower(sha1(implode('.', $pieces)));
+        // currency CODE must be uppercase in the first step
+        $pieces = array($timestamp, $merchantId, $orderId, $amount, strtoupper($currency));
+        $piecesString = implode('.', $pieces);
+        $secretHashData = strtolower(sha1($piecesString));
         $finalPreHash = $secretHashData.'.'.$secretHash;
         return sha1($finalPreHash);
     }

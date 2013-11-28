@@ -8,7 +8,7 @@ class plgCoursemanPaymentRealexInstallerScript {
      * The release value to be displayed and checked against throughout this file.
      */
 
-    private $release = '1.0.0';
+    private $release = '1.0.1';
 
     /*
      * Find mimimum required joomla version for this extension. It will be read from the version attribute (install tag) in the manifest file
