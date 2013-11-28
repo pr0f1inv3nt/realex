@@ -1,0 +1,1 @@
+INSERT INTO #__courseman_addons(`type`,`sysname`,`name`,`trigger`,`extension_id`) VALUES("0","plg_courseman_paymentrealex", "COM_COURSEMAN_PLUGIN_REALEX_PAYMENT", "onCoursemanRealexPayment", (SELECT MAX(e.extension_id) FROM #__extensions as e WHERE `name`="Courseman - PaymentRealex"));

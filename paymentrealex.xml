@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.0" type="plugin" group="courseman" method="upgrade">
+	<name>Courseman - PaymentRealex</name>
+	<author>Profinvent</author>
+	<creationDate>November 2013</creationDate>
+	<copyright>This extension in released under the GNU/GPL License.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>info@profinvent.com</authorEmail>
+	<authorUrl>http://www.joomla.profinvent.com</authorUrl>
+	<version>1.0.0</version>
+	<description>Realex payment plugin for Course Manager</description>
+  <scriptfile>script.php</scriptfile>
+        <install> <!-- Runs on install -->
+		<sql>
+			<file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+		</sql>
+	</install>
+        <uninstall> <!-- Runs on uninstall -->
+		<sql>
+			<file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+		</sql>
+	</uninstall>
+	<files>
+                <folder>sql</folder>
+                <folder>assets</folder>
+		<filename plugin="paymentrealex">paymentrealex.php</filename>
+		<filename>index.html</filename>
+	</files>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.plg_courseman_paymentrealex.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.plg_courseman_paymentrealex.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+
+            <fieldset name="basic">
+                <field
+                        name="message"
+                        type="editor"
+                        label="PLG_COURSEMAN_PAYMENTREALEX_MESSAGE"
+                        width="500"
+                        filter="safehtml"
+                        buttons="false"
+                        />
+                
+                <field name="merchant_id"
+                       type="text" default="1234567890"
+                       label="PLG_COURSEMAN_PAYMENTREALEX_MERCHANT_ID"
+                       description="PLG_COURSEMAN_PAYMENTREALEXP_MERCHANT_ID_DESC"
+                       required="true" 
+                       />
+                
+                <field name="secret_hash"
+                       type="text" default=""
+                       label="PLG_COURSEMAN_PAYMENTREALEX_SECRET_HASH"
+                       description="PLG_COURSEMAN_PAYMENTREALEXP_SECRET_HASH_DESC"
+                       required="true"
+                        />
+                
+                <field name="account"
+                       type="text" default=""
+                       label="PLG_COURSEMAN_PAYMENTREALEX_ACCOUNT"
+                       description="PLG_COURSEMAN_PAYMENTREALEX_ACCOUNT_DESC"
+                       required="true"
+                        />
+                
+                <field name="auto_settle_flag"
+                type="radio"
+                class="btn-group"
+                default="0"
+                label="PLG_COURSEMAN_PAYMENTREALEX_AUTO_SETTLE_FLAG"
+                       description="PLG_COURSEMAN_PAYMENTREALEX_AUTO_SETTLE_FLAG_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                
+                <field name="enable_logging"
+                       type="radio"
+                       class="btn-group"
+                       default="0"
+                       label="PLG_COURSEMAN_PAYMENTREALEX_ENABLE_LOGGING"
+                       description="PLG_COURSEMAN_PAYMENTREALEX_ENABLE_LOGGING_DESC"
+                        >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+
+        </fields>
+    </config>
+</extension>
