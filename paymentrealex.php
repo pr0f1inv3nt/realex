@@ -34,10 +34,21 @@ class plgCoursemanPaymentRealex extends JPlugin {
 
 
     public function onCoursemanRealexPayment($order, $order_items) {
-        $lang = JFactory::getLanguage();
-        $lang->load($order->sysname,JPATH_ADMINISTRATOR);
         $result = $this->params->get('message');
         $url = "https://epage.payandshop.com/epage.cgi";
+        
+        /**
+         * URLs to return are set by realex system. It should be mailed like this:
+         * 
+         * Realex return URL:
+         * JURI::base().'?option=com_courseman&tgr=RealexPaymentCompleted&controller=ntincoming&task=processext
+         * 
+         * // OTHER POSSIBLE URLs for special cases:
+         * JURI::base().'?option=com_courseman&tgr=RealexPaymentCompleted&controller=ntincoming&task=process&oid='.$order->id
+         * JURI::base().'?option=com_courseman&amp;controller=pay&amp;task=thanks
+         * JURI::base().'?option=com_courseman&tgr=PaypalPaymentCompleted&controller=ntincoming&task=process&oid='.$order->id
+         * JURI::current()
+         */
         
         $result .= '<br /><div class="row-fluid">';
         $result .= '<div class="span5 ">';
@@ -80,9 +91,17 @@ class plgCoursemanPaymentRealex extends JPlugin {
 
     public function onCoursemanRealexPaymentCompleted() {
 
-        $jinput = JFactory::getApplication()->input;
         jimport('joomla.log.log');
-
+        
+        /*** TEST DATA ***/
+            /*$_POST['ORDER_ID'] = 3;
+            // Will contain a valid authcode if the transaction was successful. Will be empty otherwise. 
+            $_POST['AUTHCODE'] = 'test auth code';
+            $_POST['MESSAGE '] = 'transaction successful';
+            $_POST['RESULT'] = '00';
+            $_POST['PASREF'] = '123456789';*/
+        /*** END TEST DATA ***/
+        
         JLog::addLogger(
             array(
                 //Sets file name
@@ -95,7 +114,7 @@ class plgCoursemanPaymentRealex extends JPlugin {
         );
 
         if($this->params->get('enable_logging')){
-            JLog::add('Payment to be completed requested by Realex. Status '.$_POST['payment_status'] . ' order '.$jinput->get('oid'), JLog::INFO, 'plg_courseman_paymentrealex');
+            JLog::add('Payment to be completed requested by Realex. Status '.$_POST['RESULT'] . ' order '.$_POST['ORDER_ID'], JLog::INFO, 'plg_courseman_paymentrealex');
 
             foreach ($_POST as $key => $value) {
                 JLog::add($key .': '. $value, JLog::INFO, 'plg_courseman_paymentrealex');
@@ -107,23 +126,26 @@ class plgCoursemanPaymentRealex extends JPlugin {
             if($this->params->get('enable_logging')) JLog::add('Validation post isn\'t from Realex', JLog::ERROR, 'plg_courseman_paymentrealex');
             return false;
         }
-
-        if($_POST['payment_status'] == 'Pending') {
-
-            $result =  array('order_id' => $jinput->get('oid'), 'status' => 2, 'transaction_id' => $_POST['txn_id']);
-        } else if($_POST['payment_status'] == 'Completed') {
-            $result =  array('order_id' => $jinput->get('oid'), 'status' => 3, 'transaction_id' => $_POST['txn_id']);
-            JLog::add('STATUS CHANGED TO '.$_POST['payment_status'].implode(",", $result), JLog::INFO, 'plg_courseman_paymentrealex');
-        } else if($_POST['payment_status'] == 'Canceled_Reversal') {
-            $result =  array('order_id' => $jinput->get('oid'), 'status' => 4, 'transaction_id' => $_POST['txn_id']);
-        } else {
-
-            JLog::add('UNKNOWN STATUS', JLog::INFO, 'plg_courseman_paymentrealex');
-        }
-        JLog::add('STATUS CHANGED TO '.$_POST['payment_status'].implode(",", $result), JLog::INFO, 'plg_courseman_paymentrealex');
-        return $result;
         
-
+        
+        if($_POST['RESULT'] == '00') { // transaction successful
+            $result =  array('order_id' => $_POST['ORDER_ID'], 'status' => 3, 'transaction_id' => $_POST['PASREF'], 'result' => $_POST['RESULT']);
+            JLog::add('STATUS CHANGED TO '.$_POST['RESULT'].implode(",", $result), JLog::INFO, 'plg_courseman_paymentrealex');
+        // declined || referral by bank (like declined) || card reported lost or stolen
+        } else if ($_POST['RESULT'] == '101' || $_POST['RESULT'] == '102' || $_POST['RESULT'] == '103') { 
+            $result =  array('order_id' => $_POST['ORDER_ID'], 'status' => 4, 'transaction_id' => $_POST['PASREF'], 'result' => $_POST['RESULT']);
+        } else if ($_POST['RESULT'] == '205') { // comms error
+            $result =  array('order_id' => $_POST['ORDER_ID'], 'result' => $_POST['RESULT']);
+            JLog::add('COMMS ERROR', JLog::INFO, 'plg_courseman_paymentrealex');
+        } else if ($_POST['RESULT'] == '205') { // comms error
+            $result =  array('order_id' => $_POST['ORDER_ID'], 'result' => $_POST['RESULT']);
+            JLog::add('COMMS ERROR', JLog::INFO, 'plg_courseman_paymentrealex');
+        } else {
+            $result =  array('order_id' => $_POST['ORDER_ID'], 'result' => $_POST['RESULT']);
+            JLog::add('OTHER ERROR / UNKNOWN STATUS', JLog::INFO, 'plg_courseman_paymentrealex');
+        }
+        
+        return $result;
     }
 
     /**

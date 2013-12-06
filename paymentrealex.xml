@@ -7,8 +7,11 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>info@profinvent.com</authorEmail>
 	<authorUrl>http://www.joomla.profinvent.com</authorUrl>
-	<version>1.0.1</version>
-	<description>Realex payment plugin for Course Manager</description>
+	<version>1.0.2</version>
+	<description>Realex payment plugin for Course Manager. In order to work properly, you must send 
+                     email to support@realexpayments.com and activate your payment info URL:
+                     http://YOUR-WEBSITE/index.php?option=com_courseman&amp;tgr=RealexPaymentCompleted&amp;controller=ntincoming&amp;task=processext
+        </description>
   <scriptfile>script.php</scriptfile>
         <install> <!-- Runs on install -->
 		<sql>
@@ -34,6 +37,7 @@
         <fields name="params">
 
             <fieldset name="basic">
+                
                 <field
                         name="message"
                         type="editor"
